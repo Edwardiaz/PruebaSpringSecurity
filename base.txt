@@ -1,0 +1,524 @@
+DROP SCHEMA `comercio2`;
+CREATE SCHEMA IF NOT EXISTS `comercio2` DEFAULT CHARACTER SET utf8;
+USE `comercio2` ;
+SET GLOBAL time_zone = '-06:00';
+CREATE TABLE IF NOT EXISTS `comercio2`.`users` (
+  `idUsers` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `firstName` VARCHAR(50) NOT NULL,
+  `secondName` VARCHAR(50) NULL DEFAULT NULL,
+  `firstLastName` VARCHAR(50) NOT NULL,
+  `secondLastName` VARCHAR(50) NULL DEFAULT NULL,
+  `address` VARCHAR(100) NOT NULL,
+  `creationDate` DATE NULL DEFAULT NULL,
+  `updateDate` DATE NULL DEFAULT NULL,
+  `users` VARCHAR(50) NOT NULL UNIQUE,
+  `email` VARCHAR(50) NOT NULL UNIQUE,
+  `password` TEXT NOT NULL,
+  `passwordTemporal` TEXT NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `comercio2`.`client`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `comercio2`.`client` (
+  `idClient` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `firstName` VARCHAR(45) NOT NULL,
+  `secondName` VARCHAR(45) NULL DEFAULT NULL,
+  `firstLastName` VARCHAR(45) NOT NULL,
+  `secondLastName` VARCHAR(45) NULL DEFAULT NULL,
+  `mail` VARCHAR(150) NOT NULL ,
+  `password` VARCHAR(150) NOT NULL,
+  `userName` VARCHAR(25) NOT NULL,
+  `address` VARCHAR(250) NULL DEFAULT NULL,
+  `registrationDate` DATETIME NOT NULL,
+  `updateDate` VARCHAR(45) NOT NULL,
+  `idUsers` INT(11) NOT NULL,
+ foreign key (idUsers) references users(idUsers)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`invoice` (
+  `idInvoice` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `invoiceCode` VARCHAR(100) NOT NULL unique,
+  `dateInvoice` DATETIME NOT NULL,
+  `nameStore` VARCHAR(250) NOT NULL,
+  `idClient` INT(11) NOT NULL,
+  `playmentDate` DATETIME NOT NULL,
+  foreign key (idClient) references `client`(idClient)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`invoiceDetail` (
+  `idInvoiceDetail` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `invoiceDate` TIMESTAMP NOT NULL,
+  `dateInvoice` DATETIME NOT NULL,
+  `quantity` INT(11) NOT NULL,
+  `price` DECIMAL(20,6) NOT NULL,
+  `subTotal` DECIMAL(20,6) NOT NULL,
+  `tax` DECIMAL(20,6) NOT NULL,
+  `discount` DECIMAL(20,6) NOT NULL,
+  `totalPrice` DECIMAL(20,6) NOT NULL,
+  `idInvoice` INT(11) NOT NULL,
+  foreign key (idInvoice) references `invoice`(idInvoice)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`optionss` (
+  `idOptionss` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `optionss` VARCHAR(100) NULL DEFAULT NULL,
+  `url` VARCHAR(2000) NULL DEFAULT NULL,
+  `icon` VARCHAR(100) NULL DEFAULT NULL,
+  `subMenu` VARCHAR(100) NULL DEFAULT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`page` (
+  `idPage` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(150) NOT NULL,
+  `contenido` VARCHAR(500) NOT NULL,
+  `dateCreate` DATE NULL DEFAULT NULL,
+  `dateUpdate` DATE NULL DEFAULT NULL,
+  `domain` VARCHAR(150) NOT NULL,
+  `status` TINYINT(1) NULL DEFAULT NULL,
+  `keyURL` VARCHAR(200) NULL DEFAULT NULL,
+  `metaTitle` VARCHAR(100) NULL DEFAULT NULL,
+  `metaKeyWords` VARCHAR(100) NULL DEFAULT NULL,
+  `metaDescriptions` VARCHAR(100) NULL DEFAULT NULL,
+  `idUsers` INT(11) NULL DEFAULT NULL,
+ foreign key (idUsers) references `users`(idUsers)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`role` (
+  `idRole` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `role` VARCHAR(100) NULL DEFAULT NULL,
+  `status` TINYINT(1) NOT NULL
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `ecommerce`.`roleOptions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `comercio2`.`roleOptions` (
+  `idRoleOptions` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `optionss` VARCHAR(40) NOT NULL,
+  `insertar` Tinyint(1) NULL DEFAULT NULL,
+  `actualizar` Tinyint(1) NULL DEFAULT NULL,
+  `eliminar` Tinyint(1) NULL DEFAULT NULL,
+  `consultar` Tinyint(1) NULL DEFAULT NULL,
+  `idRole` INT(11) NULL DEFAULT NULL,
+  `idOptionss` INT(11) NULL DEFAULT NULL,
+  foreign key (idRole) references `role`(idRole),
+  foreign key (idOptionss) references `optionss`(idOptionss)
+  )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`usersRole` (
+  `idUseRole` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `idUsers` INT(11) NULL DEFAULT NULL,
+  `idRole` INT(11) NULL DEFAULT NULL,
+  `roleActive` TINYINT(1) NULL DEFAULT NULL,
+ foreign key (idUsers) references `users`(idUsers),
+ foreign key (idRole) references `role`(idRole)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`categoryClient` (
+  `idCategoryClient` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(150) NOT NULL,
+  `description` VARCHAR(300) NOT NULL,
+  `idParentCategoryClient` INT(11),
+ foreign key (idParentCategoryClient) references `categoryClient`(idCategoryClient)
+ )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`clientCategoryClient` (
+  `idClientCategoryClientl` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `idClient` INT(11) NOT NULL,
+  `idCategoryClient` INT(11) NOT NULL,
+ foreign key (idClient) references `client`(idClient),
+ foreign key (idCategoryClient) references `categoryClient`(idCategoryClient)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`timeZone` (
+  `idTimeZone` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `timeZone` varchar(35) not null UNIQUE
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`settings`(
+  `idSettings` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `nameShop` Varchar(200) not null,
+  `domain` Varchar(150) not null UNIQUE,
+  `telephone1` Varchar(20) null, 
+  `telephone2` Varchar(20) null, 
+  `email1` Varchar(50) null UNIQUE, 
+  `email2` Varchar(50) null UNIQUE, 
+  `address1` Varchar(120) null UNIQUE, 
+  `address2` Varchar(120) null UNIQUE,
+  `idTimeZone` INT(11) not null,
+ foreign key (idTimeZone) references `timeZone`(idTimeZone)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+  )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`country` (
+  `idCountry` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `countryName` varchar(35) not null UNIQUE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+insert into country(countryName)values('El Salvador');
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`state` (
+  `idState` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `stateName` varchar(35) NOT NULL,
+  `idCountry` INT(11) NOT NULL,
+ foreign key (idCountry) references `country`(idCountry)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+insert into state(stateName, idCountry)values('Ahuachapán', 1);
+insert into state(stateName, idCountry)values('Santa Ana', 1);
+insert into state(stateName, idCountry)values('Sonsonate', 1);
+insert into state(stateName, idCountry)values('Chalatenango', 1);
+insert into state(stateName, idCountry)values('Cuscatlán', 1);
+insert into state(stateName, idCountry)values('San Salvador', 1);
+insert into state(stateName, idCountry)values('La Libertad', 1);
+insert into state(stateName, idCountry)values('San Vicente', 1);
+insert into state(stateName, idCountry)values('Cabañas', 1);
+insert into state(stateName, idCountry)values('La Paz', 1);
+insert into state(stateName, idCountry)values('Usulután', 1);
+insert into state(stateName, idCountry)values('San Miguel', 1);
+insert into state(stateName, idCountry)values('Morazán', 1);
+insert into state(stateName, idCountry)values('La Unión', 1);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`telephone` (
+  `idTelephone` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `telephone` varchar(50) NOT NULL
+  )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`billingAddress` (
+`idBillingAddress` int not null auto_increment primary key,
+`firstName` varchar(20),
+`lastName` varchar(20),
+`email` varchar(50) unique,
+`address1` varchar(80),
+`address2` varchar(80),
+`postalCode` varchar(8),
+`idTelephone` int,
+`idState` int,
+foreign key (idTelephone) references `telephone`(idTelephone),
+foreign key (idState) references `state`(idState)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`email` (
+  `idEmail` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `email` varchar(35) NOT NULL Unique,
+  `status` tinyint(1)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`address` (
+  `idAddress` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `address` varchar(200) NOT NULL
+  )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`status` (
+`idStatus` int not null auto_increment primary key,
+`name` varchar(50),
+`state` tinyint(1)
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`promotions` (
+`idPromotions` int not null auto_increment primary key,
+`name` varchar(50),
+`amount` Double(14,2),
+`descriptions` varchar(100),
+`start` Timestamp,
+`end` date,
+`codePromotions` varchar(50) unique,
+`idStatus` int,
+foreign key (idStatus) references `status`(idStatus)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+ALTER TABLE `comercio2`.`promotions` 
+CHANGE COLUMN `start` `start` TIMESTAMP NULL DEFAULT NULL ,
+CHANGE COLUMN `end` `end` TIMESTAMP NULL DEFAULT NULL ;
+
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`orderStatus` (
+`idOrderStatus` int not null auto_increment primary key,
+`state` varchar(20),
+name varchar(40)
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`orders` (
+`idOrders` int not null auto_increment primary key,
+`orderCode` varchar(50),
+`purchaseDate` Timestamp,
+`idBillingAddress` int,
+`idOrderStatus` int,
+`idInvoice` int,
+`idPromotions` int,
+foreign key (idInvoice) references `invoice`(idInvoice),
+foreign key (idBillingAddress) references `billingAddress`(idBillingAddress),
+foreign key (idOrderStatus) references `orderStatus`(idOrderStatus),
+foreign key (idPromotions) references `promotions`(idPromotions)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`ordersDetail` (
+`idOrdersDetails` int not null auto_increment primary key,
+`productName` varchar(25),
+`productQuantity` int,
+`productPrice` decimal(10,2),
+`discounts` decimal(10,2),
+`taxes` decimal(10,2),
+`dateOfPurchase` Timestamp,
+`paymentType` varchar(10),
+`subtotal` decimal(10,2),
+`totalPrice` decimal(10,2),
+`shippingDate` Datetime,
+`shippingAddress` varchar(80),
+`supplier` varchar(25),
+`idOrders` int,
+foreign key (idOrders) references `orders`(idOrders)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+ALTER TABLE `comercio2`.`ordersDetail` 
+CHANGE COLUMN `shippingDate` `shippingDate` TIMESTAMP NULL DEFAULT NULL ;
+
+use comercio2;
+
+ /*SET FOREIGN_KEY_CHECKS = 0;*/
+DROP TABLE IF EXISTS `comercio2`.`products`;
+CREATE TABLE IF NOT EXISTS `comercio2`.`products`(
+idProducts int(11) not null auto_increment primary key,
+productCode char,
+sku varchar(100),
+nameProducts varchar(200),
+description TEXT,
+colour varchar(10),
+updateDate DATETIME,
+price decimal(20,6),
+quantity int(6),
+taxes decimal(20,6),
+additionalShippingCost decimal(20,6),
+wholeSalePrice decimal(20,6),
+productDeliveryDate DATETIME,
+width float,
+height float,
+depth float,
+weight float,
+idOrders int(11),
+foreign key (idOrders) references `orders`(idOrders)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+create table category(
+idCategory int(11) primary key not null auto_increment,
+nameCategory varchar(100) unique,
+description TEXT,
+idCategoryPadre int(11) null,foreign key (idCategoryPadre) references category(idCategory)
+on delete cascade on update cascade
+);
+
+create table productsCategory(
+idProductCategory int(11) primary key not null auto_increment,
+idProducts int(11),
+idCategory int(11),foreign key (idCategory) references category(idCategory)
+on delete cascade on update cascade,
+foreign key (idProducts) references products(idProducts)
+on delete cascade on update cascade
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`combo` (
+`idCombo` int not null auto_increment primary key,
+`nameCombo` varchar(25),
+`codeCombo` varchar(25),
+`priceCombo` double(20,2),
+`discountPriceCombo` double(20,2),
+`date` timestamp)
+DEFAULT CHARACTER SET = utf8;
+
+create table productImage(
+idProductImage int not null primary key auto_increment,
+imageCode int,
+imageName TEXT,
+idCombo int,
+idProducts int,foreign key(idProducts) references products(idProducts),
+foreign key (idCombo) references `combo`(idCombo)
+on delete cascade on update cascade
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`comboProducts` (
+`idComboProducts` int not null auto_increment primary key,
+`idCombo` int,
+`idProducts` int,
+`date` timestamp,
+foreign key (idProducts) references `products`(idProducts),
+foreign key (idCombo) references `combo`(idCombo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`configPromotions` (
+`idConfigPromotions` int not null auto_increment primary key,
+`idPromotions` int,
+`idProducts` int,
+`idCategory` int,
+foreign key (idPromotions) references `promotions`(idPromotions),
+foreign key (idProducts) references `products`(idProducts),
+foreign key (idCategory) references `category`(idCategory)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`typeAttribute` (
+`idTypeAttribute` int not null auto_increment primary key,
+`nameAttribute` varchar(40),
+`dateAttrib` timestamp null,
+`numbers` int(11),
+`decimals` DECIMAL(20,2),
+`texts` varchar(300),
+`longTexts` varchar(100),
+`logic` tinyint(1),
+`image` varchar(100)
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`configProducts` (
+`idConfigProducts` int not null auto_increment primary key,
+`nameAttribute` varchar(40),
+`codeAttribute` varchar(40),
+`visibility` tinyint(1),
+`idProducts` int,
+`idTypeAttribute` int,
+foreign key (idProducts) references `products`(idProducts),
+foreign key (idTypeAttribute) references `typeAttribute`(idTypeAttribute)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`productsConfigProducts` (
+`idProductsConfigProducts` int not null auto_increment primary key,
+`idProducts` int,
+`idConfigProducts` int,
+foreign key (idProducts) references `products`(idProducts),
+foreign key (idConfigProducts) references `configProducts`(idConfigProducts)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`supplier` (
+`idSupplier` int not null auto_increment primary key,
+`nameSupplier` varchar(40),
+`address` varchar(40),
+`mail` varchar(40) unique,
+`telephone` varchar(40)
+);
+
+CREATE TABLE IF NOT EXISTS `comercio2`.`productsSupplier` (
+`idProductSupplier` int not null auto_increment primary key,
+`idProducts` int,
+`idSupplier` int,
+foreign key (idProducts) references `products`(idProducts),
+foreign key (idSupplier) references `supplier`(idSupplier)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+
+insert into optionss values (null, 'Create', 'url', 'ico', 'sub');
+insert into role values (null, 'admin', '1');
+insert into roleOptions values (null, 'CRUD', '1', '1', '1', '1', '1', '1');
+insert into users values (null, 'Bob', NULL, 'Anderson', NULL, 'SS', '2019-09-12', '2019-09-16', 'admin', 'admin@mail.com', '12345', 'qwerty');
+insert into usersRole values (null, '1', '1', '1');
+insert into `comercio2`.`page` values (null, 'myPage', 'content', '2019-09-12', '2019-09-16', 'dominus', '1', 'url', 'meta', 'key', 'desc', '1');
+insert into `comercio2`.`client` values (null, 'Alice', NULL, 'Barton', NULL, 'a@mail.com', '12345', 'abar', 'SS', '2019-09-12 00:00:00', '2019-09-16', '1');
+insert into invoice values (null, 'A1', '2019-09-13 00:00:00', 'Store', '1', '2019-09-13 00:00:00');
+INSERT INTO orderStatus VALUES (null, 'active', 'ok');
+INSERT INTO `comercio2`.`telephone` VALUES (null, '7777-7777');
+insert into billingAddress values (null, 'John', 'Smith', 'mail@mail.com', 'any street 1', 'any street 2 same house', '11111', '1', '1');
+insert into billingAddress values (null, 'John', 'Smith jr', 'mail2@mail.com', 'any street 1', 'any street 2 same house', '11111', '1', '1');
+insert into comercio2.status values('1', '2X1', '1');
+insert into promotions values (null, 'promo', '10.02', '2X1', '2019-09-17 00:00:00', '2019-12-31 00:00:00', 'GimmeFreeStuff', 1);
+insert into orders values (null, 'pupusas', '2019-09-16 11:41:39', '1', '1', '1', '1');
+insert into invoiceDetail values (null, '2019-09-12 00:00:00', '2019-09-12 00:00:00', '3', '8.320000', '8.320000', '0.100000', '0.010000', '9.020000', '1');
+insert into products values (null, 'A', 'AA', 'Nintendo', 'Best Company ever', 'Red', NULL, '100000000.000000', '1', '0.000000', '0.000000', '100000000.000000', '1900-12-01 00:00:00', '200', '200', '900', '500', null);
+insert into comercio2.combo VALUES (null, 'Full extras', 'E1', '200', '50', '2019-09-18');
+insert into productImage values (null, '2', 'tesla.jpg', '1', '1');
+INSERT INTO `comercio2`.`category` VALUES (null, 'starter', 'good', null);
+insert into productsCategory values (null, '1', '1');
+insert into ordersDetail values (null, 'Nokia', '4', '80.50', '0.15', '0.10', '2019-09-12 00:00:00', 'CC', '79.20', '79.20', '2019-09-16 00:00:00', 'SS', 'nokia.inc', '1');
+insert into invoice  values (null, 'A2', '2019-09-13 00:00:00', 'Store', '1', '2019-09-13 00:00:00');
+INSERT INTO comercio2.categoryClient VALUES (null, 'Frequent', 'buys twice a week', NULL);
+INSERT INTO comercio2.clientCategoryClient VALUES (null, '1', '1');
+insert into comercio2.address values(null, 'SS');
+insert into comercio2.comboProducts VALUES (null, '1', '1', '2019-09-18');
+INSERT INTO `comercio2`.`typeAttribute` (`nameAttribute`, `dateAttrib`, `numbers`, `decimals`, `texts`, `longTexts`, `logic`, `image`) VALUES ('Attrib', '2019-09-18', '3', '0.05', 'Ipsum Lorem', '1', '1', 'illustration.jpg');
+insert into comercio2.configProducts VALUES (null, 'Attrib', 'A1', '0', '1', '1');
+insert into comercio2.configPromotions VALUES (null, '1', '1', '1');
+insert into comercio2.email VALUES (null, 'mail@mail.com', '0');
+insert into comercio2.productsConfigProducts VALUES (null, '1', '1');
+insert into comercio2.supplier VALUES (null, 'Super Prods.inc', 'SS', 'suplier@mail.com', '2222-2222');
+insert into comercio2.productsSupplier VALUES (null, '1', '1');
+insert into comercio2.timeZone  VALUES (null, 'CST');
